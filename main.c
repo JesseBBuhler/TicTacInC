@@ -8,10 +8,16 @@ bool moveTaken(int move, int board[BOARD_SIZE][BOARD_SIZE]);
 int getValidInput(int board[BOARD_SIZE][BOARD_SIZE]);
 int makeMove(int turn, int move, int board[BOARD_SIZE][BOARD_SIZE]);
 void clearLine();
+bool winningMove(int move);
+int getCol(int move);
+int getRow(int move);
 
 int main() {
     int board[BOARD_SIZE][BOARD_SIZE];
+    int turn = 0;
+    char winner = ' ';
 
+    //populate board
     int boardIndex = 1;
     for(int i = 0; i < BOARD_SIZE; i++) {
 
@@ -20,13 +26,30 @@ int main() {
             boardIndex++;
         }
     }
-    printBoard(board);
 
-    makeMove(-1, getValidInput(board), board);
+    while(winner == ' ' && turn < (BOARD_SIZE * BOARD_SIZE)) {
+        printBoard(board);
+        int move = getValidInput(board);
+        makeMove(((turn % 2) -1), move, board);
+        if(winningMove(move)) {
+            if(turn % 2) {
+                winner = 'O';
+            } else {
+                winner = 'X';
+            }
+
+        }
+        turn++;
+    }
     
     printBoard(board);
+    printf("%c won the game!", winner);
     
     return 0;
+}
+
+bool winningMove(int move) {
+    return false;
 }
 
 int printBoard(int board[BOARD_SIZE][BOARD_SIZE]) {
@@ -56,14 +79,26 @@ int printBoard(int board[BOARD_SIZE][BOARD_SIZE]) {
 
 bool moveTaken(int move, int board[BOARD_SIZE][BOARD_SIZE]) {
     bool taken = false;
-    int row = ceil((double)move / BOARD_SIZE) - 1;
-    int col = (move % BOARD_SIZE) - 1;
+    int row = getRow(move);
+    int col = getCol(move);
 
     if(board[row][col] != move) {
         taken = true;
     }
     
     return taken;
+}
+
+int getCol(int move) {
+    int col = BOARD_SIZE - 1;
+    if ((move % BOARD_SIZE) > 0) {
+        col = (move % BOARD_SIZE) - 1;
+    }
+    return col;
+}
+int getRow(int move) {
+    int row = ceil((double)move / BOARD_SIZE) - 1;
+    return row;
 }
 
 int getValidInput(int board[BOARD_SIZE][BOARD_SIZE]) {
@@ -85,8 +120,8 @@ int getValidInput(int board[BOARD_SIZE][BOARD_SIZE]) {
 }
 
 int makeMove(int turn, int move, int board[BOARD_SIZE][BOARD_SIZE]) {
-    int row = ceil((double)move / BOARD_SIZE) - 1;
-    int col = (move % BOARD_SIZE) - 1;
+    int row = getRow(move);
+    int col = getCol(move);
 
     board[row][col] = turn;
     return 0;
